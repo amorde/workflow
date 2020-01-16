@@ -27,9 +27,7 @@ import com.squareup.sample.hellocomposebinding.HelloWorkflow.Rendering
 import com.squareup.workflow.ui.compose.bindCompose
 
 val HelloBinding = bindCompose<Rendering> { rendering, _ ->
-  MaterialTheme {
-    DrawHelloRendering(rendering)
-  }
+  DrawHelloRendering(rendering)
 }
 
 @Composable

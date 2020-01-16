@@ -43,15 +43,20 @@ import kotlin.reflect.KClass
  *
  * @Composable
  * private fun showFoo(foo: FooRendering) {
- *   MaterialTheme {
- *     Text(foo.message)
- *   }
+ *   Text(foo.message)
  * }
  *
  * …
  *
  * val viewRegistry = ViewRegistry(FooBinding, …)
  * ```
+ *
+ * ## [ComposableDecorator]
+ *
+ * Often all the `@Composable` bindings in an app need to share some context – for example, being
+ * wrapped with a `MaterialTheme`. To configure shared context, provide a [ComposableDecorator] in
+ * your top-level [ContainerHints]. All composable bindings will be wrapped in call to that
+ * decorator function. See the documentation on [ComposableDecorator] for more information.
  */
 inline fun <reified RenderingT : Any> bindCompose(
   noinline showRendering: @Composable() (RenderingT, ContainerHints) -> Unit
@@ -78,8 +83,11 @@ internal class ComposeViewBinding<RenderingT : Any>(
         initialRendering,
         initialContainerHints
     ) { rendering, hints ->
+      val decorator = hints[ComposableDecorator]
       composeContainer.setContent {
-        showRendering(rendering, hints)
+        decorator.decorate {
+          showRendering(rendering, hints)
+        }
       }
     }
     return composeContainer
